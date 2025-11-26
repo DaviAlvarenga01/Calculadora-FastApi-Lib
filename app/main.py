@@ -1,26 +1,39 @@
 from fastapi import FastAPI, HTTPException
-from app.models.models import CalculoRequest, CalculoResponse
+from app.models.models import OperacaoRequest, OperacaoResponse
 from app.controller.operations import Calculadora
 
 app = FastAPI(title="Calculadora API", version="1.0.0")
 
-@app.post("/calcular", response_model=CalculoResponse)
-def calcular(dados: CalculoRequest):
-    calc = Calculadora()
-    
+calc = Calculadora()
+
+@app.post("/somar", response_model=OperacaoResponse)
+def somar(dados: OperacaoRequest):
     try:
-        if dados.operacao == "somar":
-            resultado = calc.somar(dados.num1, dados.num2)
-        elif dados.operacao == "subtrair":
-            resultado = calc.subtrair(dados.num1, dados.num2)
-        elif dados.operacao == "multiplicar":
-            resultado = calc.multiplicar(dados.num1, dados.num2)
-        elif dados.operacao == "dividir":
-            resultado = calc.dividir(dados.num1, dados.num2)
-        else:
-            raise HTTPException(status_code=400, detail="Operação inválida")
-        
-        return CalculoResponse(resultado=resultado, operacao=dados.operacao)
-    
+        resultado = calc.somar(dados.n1, dados.n2)
+        return OperacaoResponse(resultado=resultado, operacao="somar")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/subtrair", response_model=OperacaoResponse)
+def subtrair(dados: OperacaoRequest):
+    try:
+        resultado = calc.subtrair(dados.n1, dados.n2)
+        return OperacaoResponse(resultado=resultado, operacao="subtrair")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/multiplicar", response_model=OperacaoResponse)
+def multiplicar(dados: OperacaoRequest):
+    try:
+        resultado = calc.multiplicar(dados.n1, dados.n2)
+        return OperacaoResponse(resultado=resultado, operacao="multiplicar")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/dividir", response_model=OperacaoResponse)
+def dividir(dados: OperacaoRequest):
+    try:
+        resultado = calc.dividir(dados.n1, dados.n2)
+        return OperacaoResponse(resultado=resultado, operacao="dividir")
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
